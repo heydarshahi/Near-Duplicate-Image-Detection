@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add & Search Images</title>
+</head>
+
+<body style="text-align: center">
+
+<h1>Add Image (POST)</h1>
+<p>Upload Image</p>
+<form method="post" action="/image" enctype="multipart/form-data">
+    <input type="file" accept="image/png image/jpg" name="theimage">
+    <input type="hidden" value="add" name="request_type">
+    <input type="hidden" value="image" name="request_query">
+    <input type="submit" value="Add">
+</form>
+
+    <br/><br/>
+
+
+<!--<h1>Search Image (HASH)</h1>-->
+<!--<p>Enter image hash</p>-->
+<!--<form method="get">-->
+    <!--<input type="text" name="image">-->
+    <!--<input type="submit" value="Search">-->
+<!--</form>-->
+
+
+<h1>Search Image (POST)</h1>
+<p>Upload Image</p>
+<form method="post" action="/image" enctype="multipart/form-data">
+    <input type="file" accept="image/png image/jpg" name="theimage">
+    <input type="hidden" value="search" name="request_type">
+    <input type="hidden" value="image" name="request_query">
+    <input type="hidden" value="15" name="distance">
+    <input type="submit" value="Search">
+
+</form>
+
+
+
+</body>
+</html>
