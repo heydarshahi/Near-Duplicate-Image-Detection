@@ -17,7 +17,7 @@ async def test(request):
 @app.route("/html")
 async def handle_image_request(request):
 
-    return html(open('files/test.html').read())
+    return html(open('files/html_view.html').read())
 
 
 
