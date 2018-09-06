@@ -54,7 +54,7 @@ def post_file_json(request):
         image_hash = find_hash(image)
 
     if request_type == "add":
-        add_image(image_hash)
+        add_image(image_hash, test_file.name)
         return json({'received': True, 'file_names': file_parameters['name'], 'hash': image_hash})
 
     elif request_type == "search":

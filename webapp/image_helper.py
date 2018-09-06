@@ -39,7 +39,10 @@ def process_image(file, action):
     imgstring = file.body
     # print(image)
 
-    filename = 'images/' + file.name
+    filename = "images/" + file.name
+    if action == "search":
+        filename = "images/uploaded/" + file.name
+
     with open(filename, 'wb') as f:
         f.write(imgstring)
         f.close()
@@ -55,9 +58,9 @@ def find_hash(img):
     return hash_string
 
 
-def add_image(image_hash):
+def add_image(image_hash, filename):
     global ID, Img, hash_tree
-    hash_tree.add(Img(int(image_hash, 16), ID, ID))
+    hash_tree.add(Img(int(image_hash, 16), filename, ID))
     print("image with hash " + image_hash + " added to hash_tree")
     ID = ID + 1
 
@@ -78,26 +81,26 @@ def mydistance(a, b):
 
 
 # return html form to show duplicates
-def image_to_html(filename, duplicates):
-    start = """<!DOCTYPE html><html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Duplicates Result</title>
-    </head>
-
-    <body style="text-align: center">
-
-    <h1>Your Image</h1>
-    <img src="images/""" + str(filename) + """"><br><br>
-    <h1>Duplicates</h1>
-    """
-
-    duplicates_html = ""
-    for duplicate_image in duplicates:
-        duplicates_html = duplicates_html + """<img src=" """ + str(duplicate_image) + """"> """
-
-
-    ending = """</body>
-    </html>"""
-
-    return str(start+duplicates_html+ending)
+# def image_to_html(filename, duplicates):
+#     start = """<!DOCTYPE html><html>
+#     <head>
+#         <meta charset="UTF-8">
+#         <title>Duplicates Result</title>
+#     </head>
+#
+#     <body style="text-align: center">
+#
+#     <h1>Your Image</h1>
+#     <img src="images/""" + str(filename) + """"><br><br>
+#     <h1>Duplicates</h1>
+#     """
+#
+#     duplicates_html = ""
+#     for duplicate_image in duplicates:
+#         duplicates_html = duplicates_html + """<img src=" """ + str(duplicate_image) + """"> """
+#
+#
+#     ending = """</body>
+#     </html>"""
+#
+#     return str(start+duplicates_html+ending)
