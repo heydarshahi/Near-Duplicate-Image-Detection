@@ -38,7 +38,6 @@ async def handle_files(request, filename):
 async def post_file_json(request, request_type):
     print('file received...')
     print('--')
-    file_parameters = {}
     # request_type = request.form.get('request_type')  # "add" or "search"
     request_by = request.form.get('request_query')  # "hash" or "image"
     request_id = request.form.get('request_id')
@@ -57,6 +56,7 @@ async def post_file_json(request, request_type):
             return json({"received": False, "description": "ID not existing"})
 
     if request_type == "add":
+
         add_res = add_image(image_hash, request_id)
 
         if add_res == "existing_id":
