@@ -1,14 +1,15 @@
-from sanic import Sanic
+from sanic import Sanic, response
 from sanic.response import json, file, text, html, stream, file_stream
-from image_helper import *
+from image_helper import initialize_bktree, process_image, add_image\
+                        , find_hash, find_hash_by_id, find_duplicates, persist_hash_tree
 import os
 from dotenv import load_dotenv
 
-initialize_bktree()
-print('bktree initialized')
 
 load_dotenv()
 
+initialize_bktree()
+print('bktree initialized')
 
 app = Sanic()
 
@@ -34,7 +35,7 @@ async def handle_files(request, filename):
 # files
 
 @app.post("/image/<request_type>/")
-def post_file_json(request, request_type):
+async def post_file_json(request, request_type):
     print('file received...')
     print('--')
     file_parameters = {}
@@ -65,17 +66,19 @@ def post_file_json(request, request_type):
 
     elif request_type == "search":
         # distance = request.form.get("distance")
-        duplicates = find_duplicates(image_hash, os.getenv("DISTANCE"))
+        duplicates = find_duplicates(image_hash, os.getenv("DISTANCE", "15"))
 
         return json({"query image hash": image_hash, "duplicate_count": len(duplicates),
                      "duplicate id list": duplicates})
 
-# forms
 
-@app.route("/form")
-def post_json(request):
-    return json({"received": True, "form_data": request.form, "test": request.form.get('test')})
+@app.listener('before_server_stop')
+async def notify_server_stopping(app, loop):
+    print('Server shutting down!')
+    persist_hash_tree()
+    print('hash tree persisted.')
+
 
 
 if __name__ == "__main__":
-    app.run(host=os.getenv("HOST"), port=os.getenv("PORT"))
+    app.run(host=os.getenv("HOST", "0.0.0.0"), port=os.getenv("PORT", "8000"))

@@ -1,4 +1,4 @@
-/venv/*
-/webapp/images/*
-/.idea/*
-.env
+/venv/
+/webapp/images/
+/.idea/
+/files/hashlist.txt

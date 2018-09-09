@@ -2,6 +2,8 @@ import pybktree
 from hash_helper import compute_hash
 from PIL import Image
 import collections
+import json
+from io import BytesIO
 import os
 
 hash_tree = []
@@ -9,30 +11,17 @@ Img = None
 id_hash_dict = {}
 
 
-# TODO hash_list should be persisted
 def initialize_bktree():
-    global hash_tree, Img
+    global hash_tree, Img, id_hash_dict
     Img = collections.namedtuple('Img', 'hash id')
-    hash_list = []
-    hash_tree = pybktree.BKTree(mydistance, hash_list)
+    id_hash_dict = json.load(open(os.getenv("HASH_LIST", "files/hashlist.txt")))
+    hash_tree = pybktree.BKTree(mydistance, [])
+    for img_id in id_hash_dict:
+        hash_tree.add(Img(int(id_hash_dict[img_id], 16), img_id))
 
 
-# TODO process image without file system (with StringIO)
 def process_image(file, action):
-    imgstring = file.body
-    # print(image)
-
-    filename = "images/" + file.name
-    if action == "search":
-        filename = "images/uploaded/" + file.name
-
-    with open(filename, 'wb') as f:
-        f.write(imgstring)
-        f.close()
-
-    res = Image.open(filename)
-    if action == "search":
-        os.remove(filename)
+    res = Image.open(BytesIO(file.body))
     return res
 
 
@@ -71,3 +60,8 @@ def find_duplicates(image_hash, distance):
 
 def mydistance(a, b):
     return pybktree.hamming_distance(a.hash, b.hash)
+
+
+def persist_hash_tree():
+    global id_hash_dict
+    json.dump(id_hash_dict, open("files/hashlist.txt", 'w'))
