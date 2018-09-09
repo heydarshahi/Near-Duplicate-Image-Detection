@@ -9,14 +9,15 @@
 
 <h1>Add Image (POST)</h1>
 <p>Upload Image</p>
-<form method="post" action="/image" enctype="multipart/form-data">
+<form method="post" action="/image/add" enctype="multipart/form-data">
     <input type="file" accept="image/png image/jpg" name="theimage">
-    <input type="hidden" value="add" name="request_type">
-    <input type="hidden" value="image" name="request_query">
+    <!--<input type="hidden" value="add" name="request_type">-->
+    <input type="hidden" value="image" name="request_query"><br><br>
+    ID: <input type="text" name="request_id"><br><br>
     <input type="submit" value="Add">
 </form>
 
-    <br/><br/>
+    <br>
 
 
 <!--<h1>Search Image (HASH)</h1>-->
@@ -29,14 +30,25 @@
 
 <h1>Search Image (POST)</h1>
 <p>Upload Image</p>
-<form method="post" action="/image" enctype="multipart/form-data">
+<form method="post" action="/image/search" enctype="multipart/form-data">
     <input type="file" accept="image/png image/jpg" name="theimage">
-    <input type="hidden" value="search" name="request_type">
     <input type="hidden" value="image" name="request_query">
-    <input type="hidden" value="15" name="distance">
     <input type="submit" value="Search">
 
 </form>
+
+<br>
+
+<h1>Search Image (by ID)</h1>
+<p>Search ID</p>
+<form method="post" action="/image/search" enctype="multipart/form-data">
+    <input type="text"  name="request_id">
+    <input type="hidden" value="id" name="request_query">
+    <input type="submit" value="Search">
+
+</form>
+
+
 
 
 

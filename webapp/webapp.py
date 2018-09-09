@@ -2,12 +2,15 @@ from sanic import Sanic
 from sanic.response import json, file, text, html, stream, file_stream
 from image_helper import *
 import os
-
-app = Sanic()
+from dotenv import load_dotenv
 
 initialize_bktree()
 print('bktree initialized')
 
+load_dotenv()
+
+
+app = Sanic()
 
 @app.route("/")
 async def test(request):
@@ -20,8 +23,6 @@ async def handle_image_request(request):
     return html(open('files/html_view.html').read())
 
 
-
-
 @app.get("/html/<filename>")
 async def handle_files(request, filename):
     file_list = os.listdir('images/')
@@ -32,38 +33,42 @@ async def handle_files(request, filename):
 
 # files
 
-@app.post("/image")
-def post_file_json(request):
+@app.post("/image/<request_type>/")
+def post_file_json(request, request_type):
     print('file received...')
     print('--')
     file_parameters = {}
-    request_type = request.form.get('request_type')  # "add" or "search"
+    # request_type = request.form.get('request_type')  # "add" or "search"
     request_by = request.form.get('request_query')  # "hash" or "image"
+    request_id = request.form.get('request_id')
 
     if request_by == "hash":
         image_hash = request.form.get("hash")
 
     elif request_by == "image":
         test_file = request.files.get('theimage')
-        file_parameters = {
-            'body': test_file.body,
-            'name': test_file.name,
-            'type': test_file.type,
-        }
         image = process_image(test_file, request_type)
         image_hash = find_hash(image)
 
+    elif request_by == "id":
+        image_hash = find_hash_by_id(request_id)
+        if image_hash is None:
+            return json({"received": False, "description": "ID not existing"})
+
     if request_type == "add":
-        add_image(image_hash, test_file.name)
-        return json({'received': True, 'file_names': file_parameters['name'], 'hash': image_hash})
+        add_res = add_image(image_hash, request_id)
+
+        if add_res == "existing_id":
+            return json({"received": False, "description": "existing ID"})
+
+        return json({'received': True, 'hash': image_hash})
 
     elif request_type == "search":
-        distance = request.form.get("distance")
-        duplicates = find_duplicates(image_hash, distance)
-        # duplicates_result_html = image_to_html(test_file.name, duplicates)
-        # return html(duplicates_result_html)
-        return json({"query image": test_file.name, "duplicate_count": len(duplicates),
-                     "duplicate file list": duplicates})
+        # distance = request.form.get("distance")
+        duplicates = find_duplicates(image_hash, os.getenv("DISTANCE"))
+
+        return json({"query image hash": image_hash, "duplicate_count": len(duplicates),
+                     "duplicate id list": duplicates})
 
 # forms
 
@@ -73,4 +78,4 @@ def post_json(request):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host=os.getenv("HOST"), port=os.getenv("PORT"))
