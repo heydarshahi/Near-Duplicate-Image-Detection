@@ -23,12 +23,14 @@ should be __multipart/form-data__ and the parameters should be:
 
 - **webapp.py**: Main function that sets up a Sanic web server. Functions include:
 
-    - _post_file_json()_: Two routes are handled by this function:
-        - **/image/add**: a post request (as described in the Description part) should be sent, to add
+    - _post_file_add()_: The route handled by this function is **/image/add/**.
+    A post request (as described in the Description part) should be sent, to add
         new images. Adding should be by image and id. **Returns** a json file with status "file received"
          or "existing ID".
-        - **/image/search**: to search for an image by id or image. **Returns** a json file with a list
-        of duplicate IDs. 
+         
+      - _post_file_search()_: The route handled by this function is **/image/search/**.
+    To search for an image by id or image. **Returns** a json file with a list
+    of duplicate IDs. 
         
     - _notify_server_stopping(app, loop)_: This is called before server stops to persist the added hashes
     by calling _image_helper.persist_hash_tree()_

@@ -2,12 +2,8 @@ from sanic import Sanic, response
 from sanic.response import json, file, text, html, stream, file_stream
 from image_helper import initialize_bktree, process_image, add_image\
                         , find_hash, find_hash_by_id, find_duplicates, persist_hash_tree, get_hash_from_request
-from sanic_validation import validate_json
 import os
 from dotenv import load_dotenv
-
-add_schema = {'content-type': {'allowed': ['koe'], 'required': True, 'empty': False},
-              'request_id': {'required': True}}
 
 load_dotenv()
 
@@ -29,7 +25,6 @@ async def handle_image_request(request):
 
 # files
 @app.post("/image/add/")
-@validate_json(add_schema)
 async def post_file_add(request):
 
     request_by, request_id, image_hash = get_hash_from_request(request)
