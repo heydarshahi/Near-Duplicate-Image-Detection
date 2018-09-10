@@ -20,7 +20,7 @@ def initialize_bktree():
         hash_tree.add(Img(int(id_hash_dict[img_id], 16), img_id))
 
 
-def process_image(file, action):
+def process_image(file):
     res = Image.open(BytesIO(file.body))
     return res
 
@@ -34,6 +34,21 @@ def find_hash_by_id(id):
     global id_hash_dict
     res = id_hash_dict.get(id)
     return res
+
+
+def get_hash_from_request(request):
+    request_by = request.form.get('request_query')  # "hash" or "image"
+    request_id = request.form.get('request_id')
+    if request_by == "hash":
+        return request_by, request_id, request.form.get("hash")
+
+    elif request_by == "image":
+        test_file = request.files.get('theimage')
+        image = process_image(test_file)
+        return request_by, request_id, find_hash(image)
+
+    elif request_by == "id":
+        return request_by, request_id, find_hash_by_id(request_id)
 
 
 def add_image(image_hash, id):
