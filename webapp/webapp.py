@@ -27,22 +27,26 @@ async def handle_image_request(request):
 @app.post("/image/add/")
 async def post_file_add(request):
 
-    request_by, request_id, image_hash = get_hash_from_request(request)
-
-    if image_hash is None:
-        return json({"received": False, "description": "ID not existing"})
+    request_by, request_id, image_hash, error = get_hash_from_request(request, "add")
+    # validation
+    if error != "no_error":
+        return json({"received": False, "description": error})
 
     add_res = add_image(image_hash, request_id)
 
-    if add_res == "existing_id":
-        return json({"received": False, "description": "existing ID"})
+    if not add_res:
+        return json({"received": False, "description": "Bad Request"})
 
     return json({'received': True, 'hash': image_hash})
 
 
 @app.post("/image/search/")
 async def post_file_search(request):
-    request_by, request_id, image_hash = get_hash_from_request(request)
+    request_by, request_id, image_hash, error = get_hash_from_request(request, "search")
+    # validation
+    if error != "no_error":
+        return json({"received": False, "description": error})
+
     duplicates = find_duplicates(image_hash, os.getenv("DISTANCE", "15"))
 
     return json({"query image hash": image_hash, "duplicate_count": len(duplicates),
@@ -54,8 +58,6 @@ async def notify_server_stopping(app, loop):
     print('Server shutting down!')
     persist_hash_tree()
     print('hash tree persisted.')
-
-
 
 
 if __name__ == "__main__":
